@@ -8,6 +8,7 @@ repositories {
 }
 
 dependencies {
+
     //compile("org.springframework.boot:spring-boot-starter-web")
     compile("com.fasterxml.jackson.core:jackson-databind:2.8.9")
     compile("org.hibernate:hibernate-validator:5.3.5.Final")
@@ -23,7 +24,15 @@ dependencies {
     compile("org.apache.tomcat.embed:tomcat-embed-core:8.5.16")
     compile("org.apache.tomcat.embed:tomcat-embed-el:8.5.16")
     compile("org.apache.tomcat.embed:tomcat-embed-websocket:8.5.16")
-    
+
     testCompile("org.springframework.boot:spring-boot-starter-test")
 
 }
+
+bootRun.environment([
+        "WELCOME_MESSAGE": "helloTHERE",
+])
+
+test.environment([
+        "WELCOME_MESSAGE": "Hello from test",
+])
