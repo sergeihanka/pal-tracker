@@ -1,6 +1,9 @@
+import org.flywaydb.gradle.task.FlywayMigrateTask
+
 plugins {
     id "java"
     id "org.springframework.boot" version "1.5.4.RELEASE"
+    id "org.flywaydb.flyway" version "4.2.0"
 }
 
 repositories {
@@ -8,32 +11,34 @@ repositories {
 }
 
 dependencies {
-
-    //compile("org.springframework.boot:spring-boot-starter-web")
-    compile("com.fasterxml.jackson.core:jackson-databind:2.8.9")
-    compile("org.hibernate:hibernate-validator:5.3.5.Final")
-    compile("org.springframework:spring-web")
-    compile("org.springframework:spring-webmvc")
-    compile("org.springframework:spring-core:4.3.10.RELEASE")
-    compile("org.springframework.boot:spring-boot:1.5.6.RELEASE")
-    compile("org.springframework.boot:spring-boot-autoconfigure:1.5.6.RELEASE")
-    compile("ch.qos.logback:logback-classic:1.1.11")
-    compile("org.slf4j:jcl-over-slf4j:1.7.25")
-    compile("org.slf4j:jul-to-slf4j:1.7.25")
-    compile("org.slf4j:log4j-over-slf4j:1.7.25")
-    compile("org.apache.tomcat.embed:tomcat-embed-core:8.5.16")
-    compile("org.apache.tomcat.embed:tomcat-embed-el:8.5.16")
-    compile("org.apache.tomcat.embed:tomcat-embed-websocket:8.5.16")
+    compile("org.springframework.boot:spring-boot-starter-web")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1")
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+
+    compile("mysql:mysql-connector-java:6.0.6")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
-
 }
 
+def developmentDbUrl = "jdbc:mysql://localhost:3306/tracker_dev?user=tracker&useSSL=false&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false"
 bootRun.environment([
-        "WELCOME_MESSAGE": "helloTHERE",
+    "WELCOME_MESSAGE": "hello",
+    "SPRING_DATASOURCE_URL": developmentDbUrl,
 ])
 
+def testDbUrl = "jdbc:mysql://localhost:3306/tracker_test?user=tracker&useSSL=false&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false"
 test.environment([
-        "WELCOME_MESSAGE": "Hello from test",
+    "WELCOME_MESSAGE": "Hello from test",
+    "SPRING_DATASOURCE_URL": testDbUrl,
 ])
+
+flyway {
+    url = developmentDbUrl
+    user = "tracker"
+    password = ""
+    locations = ["filesystem:databases/tracker/migrations"]
+}
+
+task testMigrate(type: FlywayMigrateTask) {
+    url = testDbUrl
+}
